@@ -1,0 +1,36 @@
+{
+  "schema_version": "1.0",
+  "bundle_id": "AI-DOS-PRODUCT-ENFORCEMENT",
+  "bundle_version": "3.1.0",
+  "source_of_truth": "HANDOFF.md",
+  "state_path": "docs/product/STAGE_GATE_STATE.json",
+  "workflow_paths": [
+    ".github/workflows/product-governance-gate.yml"
+  ],
+  "required_files": [
+    {"path": "product-enforcement-manifest.json", "kind": "manifest"},
+    {"path": ".github/workflows/product-governance-gate.yml", "kind": "static", "sha256": "a7ad612351c6c550bc1bbc7aef0243251d9676fef2abb564a8d10e31da62041a"},
+    {"path": ".github/founder-authority/README.md", "kind": "static", "sha256": "d4db7a15c0f57391b5a7e5993e637057c3cd41acd5a2d94cefebae73db23eb5d"},
+    {"path": "scripts/bootstrap_preflight.py", "kind": "static", "sha256": "7810fbcdc434c11f6e9242a3d057baa25e64e46a955fe78262d7790db99f7107"},
+    {"path": "scripts/design_delivery_policy.py", "kind": "static", "sha256": "3b5d2f34be43d221a30509e5d89a0fe3d72d91033840319e305ca322e8521659"},
+    {"path": "scripts/design_policy_tests.py", "kind": "static", "sha256": "606417dcfba98a9adfa37a42d2d7a8ad540ebd5c834b2c04e3ec838806e733ab"},
+    {"path": "scripts/product_gate_tests.py", "kind": "static", "sha256": "f7976993d91740aa5d50abc04a2eb5e9fa5f4073a84d57ae9c39775360544a13"},
+    {"path": "scripts/product_lifecycle_gate.py", "kind": "static", "sha256": "6252fffa808e57f9ace4d2b6bc15829c23c159660cbf5c63e7a8c6fecb148b93"},
+    {"path": "scripts/product_pr_gate.py", "kind": "static", "sha256": "546fb3e7f692a2ea4843e810d08fc09d9b61d4fd06a26329a0bb6b2a156ecd8f"},
+    {"path": "scripts/verify_founder_attestation.py", "kind": "static", "sha256": "0230af5ff16b193d78c44d71f2a1ddbdfd96399e68d4bf73d3f251e3cf839d2b"},
+    {"path": "scripts/verify_product_handoff.py", "kind": "static", "sha256": "6256cb15999c4285c2e82c609ee4b32e23aa822ce5917c24367a6f9d993c327b"},
+    {"path": "docs/product/independence-evidence.schema.json", "kind": "static", "sha256": "ce76b5d0ed80a2d6b75d5433919a42063e0cc912a36d912a4aa5ba1cc673ecf8"},
+    {"path": "AGENTS.md", "kind": "generated"},
+    {"path": "HANDOFF.md", "kind": "generated"},
+    {"path": "PRODUCT.md", "kind": "generated"},
+    {"path": "DEVELOPMENT.md", "kind": "generated"},
+    {"path": "docs/product/STAGE_GATE_STATE.json", "kind": "generated"},
+    {"path": "docs/product/REQUIREMENTS_TRACEABILITY.md", "kind": "generated"},
+    {"path": "docs/product/INDEPENDENCE_ACCEPTANCE_TEST.md", "kind": "generated"},
+    {"path": "docs/product/QUALITY_PLAN.md", "kind": "generated"},
+    {"path": "docs/product/SECURITY_PLAN.md", "kind": "generated"},
+    {"path": "docs/product/independence-evidence.json", "kind": "generated"},
+    {"path": ".github/founder-authority/public-key.pem", "kind": "generated"},
+    {"path": ".github/founder-authority/public-key.sha256", "kind": "generated"}
+  ]
+}
