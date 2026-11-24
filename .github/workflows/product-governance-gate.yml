@@ -1,0 +1,93 @@
+name: product-governance-gate
+
+on:
+  # Run with the read-only pull_request token.  The candidate is treated as
+  # data: it is archived and inspected, never executed as workflow code.
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  product-gate:
+    name: product-gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out trusted base revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.sha || github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate complete enforcement bundle
+        env:
+          REPOSITORY: ${{ github.repository }}
+          BUNDLE_VERSION: '3.1.0'
+        run: >-
+          python scripts/bootstrap_preflight.py
+          --root .
+          --manifest product-enforcement-manifest.json
+          --state docs/product/STAGE_GATE_STATE.json
+          --repository "$REPOSITORY"
+          --expected-bundle-version "$BUNDLE_VERSION"
+      - name: Run dual-track design policy tests
+        run: python scripts/design_policy_tests.py
+      - name: Validate lifecycle ordering
+        run: python scripts/product_lifecycle_gate.py --state docs/product/STAGE_GATE_STATE.json --root . --action planning
+      - name: Materialize PR candidate as read-only input
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/product-candidate"
+          git remote add candidate "https://github.com/$HEAD_REPO.git"
+          git fetch --no-tags candidate "$HEAD_SHA"
+          git archive "$HEAD_SHA" | tar -x -C "$RUNNER_TEMP/product-candidate"
+          git diff --name-status "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/product-changed-files.txt"
+      - name: Run fail-closed product PR gate
+        if: github.event_name == 'pull_request'
+        env:
+          REPOSITORY: ${{ github.repository }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: >-
+          python scripts/product_pr_gate.py
+          --base-root .
+          --candidate-root "$RUNNER_TEMP/product-candidate"
+          --base-state docs/product/STAGE_GATE_STATE.json
+          --candidate-state "$RUNNER_TEMP/product-candidate/docs/product/STAGE_GATE_STATE.json"
+          --changed-files "$RUNNER_TEMP/product-changed-files.txt"
+          --repository "$REPOSITORY"
+          --head-sha "$HEAD_SHA"
+          --attestation "$RUNNER_TEMP/product-candidate/docs/product/FOUNDER_ATTESTATION.json"
+          --signature "$RUNNER_TEMP/product-candidate/docs/product/FOUNDER_ATTESTATION.sig"
+          --trusted-public-key ".github/founder-authority/public-key.pem"
+          --trusted-key-sha256-file ".github/founder-authority/public-key.sha256"
+      - name: Validate structured independence evidence
+        if: github.event_name == 'pull_request'
+        run: |
+          status=$(sed -n 's/^Status:[[:space:]]*//p' "$RUNNER_TEMP/product-candidate/HANDOFF.md" | head -n 1)
+          case "$status" in
+            HANDOFF_PENDING|PENDING_SETUP)
+              echo "Handoff is pending setup; independent handoff evidence is not claimed."
+              ;;
+            HANDOFF_VERIFIED)
+              python scripts/verify_product_handoff.py \
+                --handoff "$RUNNER_TEMP/product-candidate/HANDOFF.md" \
+                --acceptance-report "$RUNNER_TEMP/product-candidate/docs/product/INDEPENDENCE_ACCEPTANCE_REPORT.md" \
+                --evidence "$RUNNER_TEMP/product-candidate/docs/product/independence-evidence.json"
+              ;;
+            *)
+              echo "Unsupported or blocked handoff status: $status"
+              exit 2
+              ;;
+          esac
+
+# This workflow is a failing CI check.  It becomes an ENFORCED_BLOCK only when
+# the product repository requires the `product-gate` check and independent
+# review in its Branch Protection or Ruleset.
