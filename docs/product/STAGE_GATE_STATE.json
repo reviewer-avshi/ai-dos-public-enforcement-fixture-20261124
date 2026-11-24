@@ -1,0 +1,25 @@
+{
+  "schema_version": "1.1",
+  "product_id": "AI-DOS-PUBLIC-ENFORCEMENT-TEST-20261124",
+  "repository": "reviewer-avshi/ai-dos-public-enforcement-fixture-20261124",
+  "source_of_truth": "HANDOFF.md",
+  "projection_purpose": "mechanical_checks_only",
+  "sync_rule": "Any disagreement with HANDOFF.md or an approved decision is BLOCKED; this file cannot invent or change Founder approvals.",
+  "lifecycle": {
+    "stage_order": ["RECOVERY", "DISCOVERY", "SPECIFICATION", "UX_RESEARCH_IA", "WIREFRAMES", "DESIGN_PREFERENCES", "VISUAL_DIRECTION", "HIGH_FIDELITY_UI", "PROTOTYPE", "ARCHITECTURE", "WORK_PACKAGES", "DEVELOPMENT", "INTEGRATION_QA", "UAT", "RELEASE", "PRODUCTION_OPERATIONS"],
+    "current_stage": "RECOVERY",
+    "stages": {
+      "RECOVERY": {"status": "PROPOSED", "required_artifacts": ["HANDOFF.md", "AGENTS.md", "PRODUCT.md"]}
+    }
+  },
+  "stages": {
+    "RECOVERY": {
+      "applicability": "APPLICABLE",
+      "required_artifacts": ["HANDOFF.md", "AGENTS.md", "PRODUCT.md", "docs/product/INDEPENDENCE_ACCEPTANCE_TEST.md"],
+      "traceability_ref": "docs/product/REQUIREMENTS_TRACEABILITY.md",
+      "founder_approval_ref": null,
+      "current_status": "PROPOSED",
+      "next_allowed_actions": ["bootstrap", "independence_test"]
+    }
+  }
+}

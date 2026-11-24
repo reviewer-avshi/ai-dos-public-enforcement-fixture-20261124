@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["status", "product_id", "repository", "branch", "head_sha", "platform", "checks", "founder_acceptance"],
+  "properties": {
+    "status": {"const": "HANDOFF_VERIFIED"},
+    "product_id": {"type": "string", "minLength": 1},
+    "repository": {"type": "string", "minLength": 1},
+    "branch": {"type": "string", "minLength": 1},
+    "head_sha": {"type": "string", "minLength": 1},
+    "platform": {"type": "string", "minLength": 1},
+    "checks": {"type": "array", "minItems": 5},
+    "founder_acceptance": {"type": "object", "required": ["status", "approval_ref"]}
+  }
+}
